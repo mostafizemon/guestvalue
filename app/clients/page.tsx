@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { CreateClientModal } from "@/components/CreateClientModal";
 import { SkeletonCard } from "@/components/SkeletonCard";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [toast, setToast] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
+  const { t } = useLanguage();
 
   const fetchClients = async () => {
     setLoading(true);
@@ -39,20 +41,20 @@ export default function ClientsPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 relative min-h-screen">
-      <div className="flex justify-between items-center border-b border-[#222] pb-6">
+      <div className="flex justify-between items-center border-b border-[#44403C] pb-6">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Clients</h1>
-          <p className="text-[#a0a0a0]">Manage your luxury concierge portfolio.</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{t('clients.title')}</h1>
+          <p className="text-[#A8A29E]">{t('clients.subtitle')}</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-[#d4a853] text-black px-6 py-2 rounded-lg hover:bg-[#c39b4c] transition-colors font-medium"
         >
-          Add Client
+          {t('clients.add')}
         </button>
       </div>
 
-      <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+      <div className="bg-[#292524] border border-[#44403C] rounded-xl overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-4">
             <SkeletonCard />
@@ -62,36 +64,36 @@ export default function ClientsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-[#1a1a1a] border-b border-[#222]">
-                <tr className="text-[#a0a0a0] text-sm">
-                  <th className="p-4 font-medium">Name</th>
-                  <th className="p-4 font-medium">Budget</th>
-                  <th className="p-4 font-medium">Destination</th>
-                  <th className="p-4 font-medium">Stay Duration</th>
-                  <th className="p-4 font-medium text-right">Linked Recs</th>
+              <thead className="bg-[#44403C] border-b border-[#44403C]">
+                <tr className="text-[#A8A29E] text-sm">
+                  <th className="p-4 font-medium">{t('clients.table.name')}</th>
+                  <th className="p-4 font-medium">{t('clients.table.budget')}</th>
+                  <th className="p-4 font-medium">{t('clients.table.destination')}</th>
+                  <th className="p-4 font-medium">{t('clients.table.stay')}</th>
+                  <th className="p-4 font-medium text-right">{t('clients.table.linked')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#222]">
+              <tbody className="divide-y divide-[#44403C]">
                 {clients.map((client) => (
-                  <tr key={client.id} className="hover:bg-[#1a1a1a]/50 transition-colors">
+                  <tr key={client.id} className="hover:bg-[#44403C]/50 transition-colors">
                     <td className="p-4 text-white font-medium">{client.name}</td>
                     <td className="p-4">
                       <span className={`text-xs uppercase tracking-wider font-bold px-2 py-1 rounded-full border ${
                         client.budget === 'Ultra' 
                           ? 'border-[#d4a853] text-[#d4a853] bg-[#d4a853]/10' 
-                          : 'border-[#606060] text-[#a0a0a0] bg-transparent'
+                          : 'border-[#78716C] text-[#A8A29E] bg-transparent'
                       }`}>
-                        {client.budget}
+                        {client.budget === 'Ultra' ? t('modal.ultraBudget') : t('modal.highBudget')}
                       </span>
                     </td>
-                    <td className="p-4 text-[#a0a0a0]">{client.destination}</td>
-                    <td className="p-4 text-[#a0a0a0]">{client.stayDuration} days</td>
-                    <td className="p-4 text-right text-[#a0a0a0]">—</td>
+                    <td className="p-4 text-[#A8A29E]">{client.destination}</td>
+                    <td className="p-4 text-[#A8A29E]">{client.stayDuration} {t('clients.days')}</td>
+                    <td className="p-4 text-right text-[#A8A29E]">—</td>
                   </tr>
                 ))}
                 {clients.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-[#606060]">No clients found.</td>
+                    <td colSpan={5} className="p-8 text-center text-[#78716C]">{t('clients.empty')}</td>
                   </tr>
                 )}
               </tbody>

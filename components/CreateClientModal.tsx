@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Star } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface CreateClientModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
     budget: "High",
   });
   const [loading, setLoading] = useState(false);
+  const { t } = useLanguage();
 
   if (!isOpen) return null;
 
@@ -54,13 +56,13 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111] border border-[#222] rounded-2xl p-8 w-full max-w-lg shadow-2xl relative">
+      <div className="bg-[#292524] border border-[#44403C] rounded-2xl p-8 w-full max-w-lg shadow-2xl relative">
         <div className="flex justify-center gap-2 mb-8">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
               className={`w-2 h-2 rounded-full ${
-                step >= i ? "bg-[#d4a853]" : "bg-[#333]"
+                step >= i ? "bg-[#d4a853]" : "bg-[#57534E]"
               }`}
             />
           ))}
@@ -68,45 +70,45 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
 
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-            <h2 className="text-xl font-bold text-white mb-6">Basic Information</h2>
+            <h2 className="text-xl font-bold text-white mb-6">{t('modal.step1')}</h2>
             <div>
-              <label className="block text-sm text-[#a0a0a0] mb-1">Full Name</label>
+              <label className="block text-sm text-[#A8A29E] mb-1">{t('modal.name')}</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg p-3 text-white focus:border-[#d4a853] focus:outline-none transition-colors"
-                placeholder="e.g. John Doe"
+                className="w-full bg-[#44403C] border border-[#57534E] rounded-lg p-3 text-white focus:border-[#d4a853] focus:outline-none transition-colors"
+                placeholder={t('modal.namePlaceholder')}
               />
             </div>
             <div>
-              <label className="block text-sm text-[#a0a0a0] mb-1">Destination</label>
+              <label className="block text-sm text-[#A8A29E] mb-1">{t('modal.destination')}</label>
               <input
                 type="text"
                 value={formData.destination}
                 onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg p-3 text-white focus:border-[#d4a853] focus:outline-none transition-colors"
-                placeholder="e.g. Maldives"
+                className="w-full bg-[#44403C] border border-[#57534E] rounded-lg p-3 text-white focus:border-[#d4a853] focus:outline-none transition-colors"
+                placeholder={t('modal.destinationPlaceholder')}
               />
             </div>
             <div>
-              <label className="block text-sm text-[#a0a0a0] mb-1">Stay Duration (days)</label>
+              <label className="block text-sm text-[#A8A29E] mb-1">{t('modal.stay')}</label>
               <input
                 type="number"
                 value={formData.stayDuration}
                 onChange={(e) => setFormData({ ...formData, stayDuration: e.target.value })}
-                className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg p-3 text-white focus:border-[#d4a853] focus:outline-none transition-colors"
-                placeholder="e.g. 7"
+                className="w-full bg-[#44403C] border border-[#57534E] rounded-lg p-3 text-white focus:border-[#d4a853] focus:outline-none transition-colors"
+                placeholder={t('modal.stayPlaceholder')}
               />
             </div>
             <div className="flex justify-end gap-3 mt-8">
-              <button onClick={onClose} className="px-4 py-2 text-[#a0a0a0] hover:text-white transition-colors">Cancel</button>
+              <button onClick={onClose} className="px-4 py-2 text-[#A8A29E] hover:text-white transition-colors">{t('modal.cancel')}</button>
               <button
                 onClick={handleNext}
                 disabled={!formData.name || !formData.destination || !formData.stayDuration}
                 className="bg-[#d4a853] text-black font-medium px-6 py-2 rounded-lg hover:bg-[#c39b4c] transition-colors disabled:opacity-50"
               >
-                Next
+                {t('modal.next')}
               </button>
             </div>
           </div>
@@ -114,40 +116,40 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
 
         {step === 2 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-            <h2 className="text-xl font-bold text-white mb-6">Select Budget Tier</h2>
+            <h2 className="text-xl font-bold text-white mb-6">{t('modal.step2')}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
                 onClick={() => setFormData({ ...formData, budget: "High" })}
                 className={`text-left p-5 rounded-xl border-2 transition-all ${
                   formData.budget === "High"
-                    ? "border-white bg-[#1a1a1a]"
-                    : "border-[#333] bg-transparent hover:border-[#444]"
+                    ? "border-white bg-[#44403C]"
+                    : "border-[#57534E] bg-transparent hover:border-[#57534E]"
                 }`}
               >
-                <div className={`text-lg font-bold mb-2 ${formData.budget === "High" ? "text-white" : "text-[#a0a0a0]"}`}>High Budget</div>
-                <div className="text-sm text-[#606060]">Premium experiences, curated selection</div>
+                <div className={`text-lg font-bold mb-2 ${formData.budget === "High" ? "text-white" : "text-[#A8A29E]"}`}>{t('modal.highBudget')}</div>
+                <div className="text-sm text-[#78716C]">{t('modal.highSubtitle')}</div>
               </button>
               
               <button
                 onClick={() => setFormData({ ...formData, budget: "Ultra" })}
                 className={`text-left p-5 rounded-xl border-2 transition-all relative ${
                   formData.budget === "Ultra"
-                    ? "border-[#d4a853] bg-[#1a1a1a]"
-                    : "border-[#333] bg-transparent hover:border-[#444]"
+                    ? "border-[#d4a853] bg-[#44403C]"
+                    : "border-[#57534E] bg-transparent hover:border-[#57534E]"
                 }`}
               >
                 {formData.budget === "Ultra" && <Star className="absolute top-4 right-4 text-[#d4a853] w-5 h-5 fill-[#d4a853]" />}
-                <div className={`text-lg font-bold mb-2 ${formData.budget === "Ultra" ? "text-[#d4a853]" : "text-[#a0a0a0]"}`}>Ultra Budget</div>
-                <div className="text-sm text-[#606060]">Unlimited luxury, no compromise</div>
+                <div className={`text-lg font-bold mb-2 ${formData.budget === "Ultra" ? "text-[#d4a853]" : "text-[#A8A29E]"}`}>{t('modal.ultraBudget')}</div>
+                <div className="text-sm text-[#78716C]">{t('modal.ultraSubtitle')}</div>
               </button>
             </div>
             <div className="flex justify-between mt-8">
-              <button onClick={handleBack} className="px-4 py-2 text-[#a0a0a0] hover:text-white transition-colors">Back</button>
+              <button onClick={handleBack} className="px-4 py-2 text-[#A8A29E] hover:text-white transition-colors">{t('modal.back')}</button>
               <button
                 onClick={handleNext}
                 className="bg-[#d4a853] text-black font-medium px-6 py-2 rounded-lg hover:bg-[#c39b4c] transition-colors"
               >
-                Next
+                {t('modal.next')}
               </button>
             </div>
           </div>
@@ -155,36 +157,36 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
 
         {step === 3 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-            <h2 className="text-xl font-bold text-white mb-6">Confirm Details</h2>
-            <div className="bg-[#1a1a1a] rounded-xl p-5 space-y-3 border border-[#333]">
+            <h2 className="text-xl font-bold text-white mb-6">{t('modal.step3')}</h2>
+            <div className="bg-[#44403C] rounded-xl p-5 space-y-3 border border-[#57534E]">
               <div className="flex justify-between">
-                <span className="text-[#606060]">Name</span>
+                <span className="text-[#78716C]">{t('modal.name')}</span>
                 <span className="text-white font-medium">{formData.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#606060]">Destination</span>
+                <span className="text-[#78716C]">{t('modal.destination')}</span>
                 <span className="text-white font-medium">{formData.destination}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#606060]">Stay Duration</span>
-                <span className="text-white font-medium">{formData.stayDuration} days</span>
+                <span className="text-[#78716C]">{t('modal.stay')}</span>
+                <span className="text-white font-medium">{formData.stayDuration} {t('clients.days')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#606060]">Budget</span>
+                <span className="text-[#78716C]">{t('suggestions.budget')}</span>
                 <span className={formData.budget === "Ultra" ? "text-[#d4a853] font-medium" : "text-white font-medium"}>
-                  {formData.budget}
+                  {formData.budget === "Ultra" ? t('modal.ultraBudget') : t('modal.highBudget')}
                 </span>
               </div>
             </div>
             
             <div className="flex justify-between mt-8">
-              <button onClick={handleBack} className="px-4 py-2 text-[#a0a0a0] hover:text-white transition-colors">Back</button>
+              <button onClick={handleBack} className="px-4 py-2 text-[#A8A29E] hover:text-white transition-colors">{t('modal.back')}</button>
               <button
                 onClick={handleSubmit}
                 disabled={loading}
                 className="bg-[#d4a853] text-black font-medium px-6 py-2 rounded-lg hover:bg-[#c39b4c] transition-colors disabled:opacity-50"
               >
-                {loading ? "Creating..." : "Create Client"}
+                {loading ? t('modal.creating') : t('modal.create')}
               </button>
             </div>
           </div>
