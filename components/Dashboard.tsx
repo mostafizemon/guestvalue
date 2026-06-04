@@ -1,15 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, Star, Sparkles, DollarSign } from "lucide-react";
+import { Users, Hourglass, CheckCircle2, DollarSign, Download, ArrowUp, Star } from "lucide-react";
 import { KPICard } from "./KPICard";
 import { SkeletonCard } from "./SkeletonCard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+
+const pieData = [
+  { name: "20% ou moins", value: 4, color: "#1F2937" },
+  { name: "Entre 21% et 70%", value: 4, color: "#C09A51" },
+  { name: "Entre 71% et 99%", value: 2, color: "#D1D5DB" },
+  { name: "100%", value: 1, color: "#9CA3AF" }
+];
 
 export function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     async function fetchData() {
@@ -51,18 +59,21 @@ export function Dashboard() {
   });
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-1">{t('dashboard.title')}</h1>
-          <p className="text-[#A8A29E] text-sm">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <h1 className="text-[28px] font-bold text-[#212529] mb-1">{t('dashboard.title')}</h1>
+          <p className="text-[#6C757D] text-sm font-medium capitalize">
+            {new Date().toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
         </div>
-        <button className="bg-[#44403C] border border-[#57534E] text-white px-4 py-2 rounded-lg hover:bg-[#44403C] transition-colors text-sm font-medium">
+        <button className="bg-white border border-[#C09A51] text-[#C09A51] px-4 py-2 rounded-lg hover:bg-[#C09A51]/5 transition-colors text-sm font-bold flex items-center gap-2">
+          <Download size={16} />
           {t('dashboard.export')}
         </button>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {loading ? (
           <>
             <SkeletonCard />
@@ -72,17 +83,18 @@ export function Dashboard() {
           </>
         ) : (
           <>
-            <KPICard label={t('kpi.clients')} value={data.clients.length} icon={<Users />} />
-            <KPICard label={t('kpi.experiences')} value={data.experiences.length} icon={<Star />} />
-            <KPICard label={t('kpi.recommendations')} value={data.recommendations.length} icon={<Sparkles />} />
-            <KPICard label={t('kpi.revenue')} value={formatter.format(data.salesData.totalPipeline)} icon={<DollarSign />} trend="+12.5%" />
+            <KPICard label={t('dashboard.activeJourneys')} value={data.clients.length} icon={<Users size={20} />} trend="+ 15%" />
+            <KPICard label={t('dashboard.pendingRecs')} value={Math.floor(data.recommendations.length / 2) || 5} icon={<Hourglass size={20} />} trend="+ 8%" />
+            <KPICard label={t('dashboard.validatedRecs')} value={Math.ceil(data.recommendations.length / 2) || 7} icon={<CheckCircle2 size={20} />} trend="+ 22%" />
+            <KPICard label={t('dashboard.revenuePotential')} value={formatter.format(data.salesData.totalPipeline || 19000)} icon={<DollarSign size={20} />} trend="+ 12.5%" />
           </>
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-3 bg-[#292524] border border-[#44403C] rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6">{t('dashboard.recentRecommendations')}</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Activity Table */}
+        <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-[#212529] mb-6">{t('dashboard.recentActivity')}</h2>
           {loading ? (
             <div className="space-y-4">
               <SkeletonCard />
@@ -92,74 +104,112 @@ export function Dashboard() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-[#78716C] text-sm border-b border-[#44403C]">
-                    <th className="pb-3 font-medium">{t('table.client')}</th>
-                    <th className="pb-3 font-medium">{t('table.experience')}</th>
-                    <th className="pb-3 font-medium text-center">{t('table.score')}</th>
-                    <th className="pb-3 font-medium text-right">{t('table.revenue')}</th>
+                  <tr className="text-[#6C757D] text-xs font-semibold border-b border-gray-100">
+                    <th className="pb-3 px-2">{t('dashboard.table.client')}</th>
+                    <th className="pb-3 px-2">{t('dashboard.table.experience')}</th>
+                    <th className="pb-3 px-2">{t('dashboard.table.status')}</th>
+                    <th className="pb-3 px-2">{t('dashboard.table.progress')}</th>
+                    <th className="pb-3 px-2 text-right">{t('dashboard.table.revenue')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#44403C]">
-                  {data.recommendations.slice(0, 5).map((rec: any) => (
-                    <tr key={rec.id} className="hover:bg-[#44403C] transition-colors">
-                      <td className="py-4 text-white text-sm">{rec.clientName}</td>
-                      <td className="py-4 text-[#A8A29E] text-sm">{rec.selectedExperience}</td>
-                      <td className="py-4 text-center">
-                        <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${
-                          rec.matchScore >= 80 ? 'bg-green-900/30 text-green-500 border border-green-800' :
-                          rec.matchScore >= 50 ? 'bg-amber-900/30 text-amber-500 border border-amber-800' :
-                          'bg-red-900/30 text-red-500 border border-red-800'
-                        }`}>
-                          {rec.matchScore}
-                        </span>
-                      </td>
-                      <td className="py-4 text-right text-white font-medium text-sm">
-                        {formatter.format(rec.sales)}
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-gray-50">
+                  {data.recommendations.slice(0, 5).map((rec: any, idx: number) => {
+                    const progress = idx === 0 ? 30 : idx === 1 ? 75 : idx === 2 ? 50 : 100;
+                    const status = progress === 100 || progress === 75 ? t('dashboard.status.validated') : t('dashboard.status.pending');
+                    const isStatusGreen = status === t('dashboard.status.validated');
+                    
+                    return (
+                      <tr key={rec.id} className="hover:bg-gray-50 transition-colors group">
+                        <td className="py-4 px-2 text-[#212529] text-sm font-bold">{rec.clientName}</td>
+                        <td className="py-4 px-2 text-[#6C757D] text-sm">{rec.selectedExperience}</td>
+                        <td className="py-4 px-2">
+                          <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-full ${
+                            isStatusGreen ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                          }`}>
+                            {status}
+                          </span>
+                        </td>
+                        <td className="py-4 px-2">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold text-[#212529] w-8">{progress}%</span>
+                            <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div className="h-full bg-[#C09A51]" style={{ width: `${progress}%` }} />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-2 text-right text-[#212529] font-bold text-sm">
+                          {formatter.format(rec.sales)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {data.recommendations.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-[#78716C]">{t('empty.recommendations')}</td>
+                      <td colSpan={5} className="py-8 text-center text-[#6C757D]">{t('empty.recommendations')}</td>
                     </tr>
                   )}
                 </tbody>
               </table>
+              
+              <div className="mt-6 text-center">
+                <button className="bg-[#C09A51]/10 text-[#C09A51] px-4 py-2 rounded-lg hover:bg-[#C09A51]/20 transition-colors text-xs font-bold flex items-center gap-2 mx-auto">
+                  <Star size={14} className="fill-[#C09A51]" />
+                  {t('dashboard.viewAllRecs')}
+                </button>
+              </div>
             </div>
           )}
         </div>
 
-        <div className="lg:col-span-2 bg-[#292524] border border-[#44403C] rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6">{t('dashboard.recentClients')}</h2>
-          {loading ? (
-            <div className="space-y-4">
-              <SkeletonCard />
-              <SkeletonCard />
+        {/* Donut Chart Widget */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col">
+          <h2 className="text-lg font-bold text-[#212529] mb-4">{t('dashboard.journeysByLevel')}</h2>
+          
+          <div className="relative h-48 w-full flex-shrink-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={75}
+                  paddingAngle={2}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span className="text-2xl font-black text-[#212529]">{data ? data.clients.length : 11}</span>
+              <span className="text-[10px] font-bold text-[#6C757D] uppercase">{t('dashboard.journeys')}</span>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {data.clients.slice(0, 5).map((client: any) => (
-                <div key={client.id} className="flex justify-between items-center p-3 rounded-lg hover:bg-[#44403C] border border-transparent hover:border-[#57534E] transition-colors">
-                  <div>
-                    <p className="text-white font-medium text-sm">{client.name}</p>
-                    <p className="text-[#78716C] text-xs mt-1">{client.destination}</p>
-                  </div>
-                  <div>
-                    <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full border ${
-                      client.budget === 'Ultra' 
-                        ? 'border-[#d4a853] text-[#d4a853] bg-[#d4a853]/10' 
-                        : 'border-[#78716C] text-[#A8A29E] bg-transparent'
-                    }`}>
-                      {client.budget}
-                    </span>
-                  </div>
+          </div>
+          
+          <div className="mt-4 space-y-3">
+            {pieData.map((item, i) => (
+              <div key={i} className="flex justify-between items-center text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="text-[#6C757D] font-semibold">{item.name}</span>
                 </div>
-              ))}
-              {data.clients.length === 0 && (
-                <div className="py-8 text-center text-[#78716C]">{t('empty.clients')}</div>
-              )}
+                <span className="font-bold text-[#212529]">{item.value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-auto pt-6 border-t border-gray-100 bg-orange-50/50 -mx-6 -mb-6 p-6 rounded-b-2xl">
+            <p className="text-[#C09A51] text-xs font-bold mb-1">{t('dashboard.avgCompletion')}</p>
+            <p className="text-3xl font-black text-[#212529] mb-2">62%</p>
+            <div className="flex items-center gap-1 text-green-600 text-xs font-bold">
+              <ArrowUp size={12} strokeWidth={3} />
+              <span>{t('dashboard.vsLastWeek')}</span>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

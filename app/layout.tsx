@@ -17,11 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="bg-[#1C1917] text-white min-h-screen">
-      <body className={`${inter.className} min-h-screen flex`}>
+    <html lang="en" className="bg-[#F8F9FA] text-[#212529] min-h-screen">
+      <body className={`${inter.className} min-h-screen flex bg-[#F8F9FA]`}>
         <LanguageProvider>
           <Sidebar />
-          <main className="flex-1 ml-[240px] min-h-screen p-8">
+          <main className="flex-1 ml-[260px] min-h-screen p-8 bg-[#F8F9FA]">
             {children}
           </main>
         </LanguageProvider>

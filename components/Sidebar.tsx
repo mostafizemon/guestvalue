@@ -19,20 +19,20 @@ export function Sidebar() {
   const { t, language, setLanguage } = useLanguage();
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[240px] bg-[#292524] border-r border-[#44403C] flex flex-col">
-      <div className="p-6">
+    <aside className="fixed left-0 top-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-10 shadow-[2px_0_10px_rgba(0,0,0,0.02)]">
+      <div className="p-8">
         <div className="flex items-center gap-2 mb-1">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L22 12L12 22L2 12L12 2Z" fill="#d4a853" />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L22 12L12 22L2 12L12 2Z" fill="#C09A51" />
           </svg>
-          <span className="text-white font-bold tracking-widest text-lg">GUESTVALUE</span>
+          <span className="text-[#212529] font-bold tracking-widest text-lg">GUESTVALUE</span>
         </div>
-        <div className="text-[#d4a853] text-[10px] uppercase tracking-[0.2em] font-medium ml-8">
+        <div className="text-[#C09A51] text-[9px] uppercase tracking-[0.25em] font-bold ml-7">
           {t('app.subtitle')}
         </div>
       </div>
 
-      <nav className="flex-1 px-4 py-4 space-y-1">
+      <nav className="flex-1 px-4 py-2 space-y-2 mt-4">
         {navLinks.map((link) => {
           const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
           const Icon = link.icon;
@@ -41,47 +41,50 @@ export function Sidebar() {
             <Link
               key={link.nameKey}
               href={link.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex items-center gap-4 px-4 py-3.5 rounded-xl text-[14px] font-semibold transition-all ${
                 isActive
-                  ? 'bg-[#44403C] text-[#d4a853] border-l-2 border-[#d4a853] rounded-l-none'
-                  : 'text-[#A8A29E] hover:bg-[#44403C] hover:text-white'
+                  ? 'bg-[#C09A51]/10 text-[#C09A51] relative'
+                  : 'text-[#6C757D] hover:bg-gray-50 hover:text-[#212529]'
               }`}
             >
-              <Icon size={18} className={isActive ? "text-[#d4a853]" : ""} />
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#C09A51] rounded-r-md" />
+              )}
+              <Icon size={18} className={isActive ? "text-[#C09A51]" : "text-[#ADB5BD]"} strokeWidth={isActive ? 2.5 : 2} />
               {t(link.nameKey)}
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-6 border-t border-[#44403C]">
-        <div className="flex bg-[#1C1917] rounded-lg p-1 mb-4 border border-[#44403C]">
+      <div className="p-6 mt-auto">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded-full bg-[#212529] flex items-center justify-center text-white text-sm font-bold shadow-md">
+            ME
+          </div>
+          <div className="text-sm">
+            <p className="text-[#212529] font-bold">Mostafiz Emon</p>
+            <p className="text-[#ADB5BD] text-xs">{t('app.admin')}</p>
+          </div>
+        </div>
+
+        <div className="flex bg-gray-100 rounded-lg p-1 w-[120px]">
           <button
             onClick={() => setLanguage('fr')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${
-              language === 'fr' ? 'bg-[#44403C] text-[#d4a853]' : 'text-[#78716C] hover:text-[#A8A29E]'
+            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all shadow-sm ${
+              language === 'fr' ? 'bg-white text-[#212529]' : 'text-[#ADB5BD] hover:text-[#6C757D] shadow-none'
             }`}
           >
             FR
           </button>
           <button
             onClick={() => setLanguage('en')}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${
-              language === 'en' ? 'bg-[#44403C] text-[#d4a853]' : 'text-[#78716C] hover:text-[#A8A29E]'
+            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all shadow-sm ${
+              language === 'en' ? 'bg-white text-[#212529]' : 'text-[#ADB5BD] hover:text-[#6C757D] shadow-none'
             }`}
           >
             EN
           </button>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#44403C] border border-[#44403C] flex items-center justify-center text-[#A8A29E] text-sm font-medium">
-            M
-          </div>
-          <div className="text-sm">
-            <p className="text-white font-medium">Mostafiz Emon</p>
-            <p className="text-[#78716C] text-xs">{t('app.admin')}</p>
-          </div>
         </div>
       </div>
     </aside>

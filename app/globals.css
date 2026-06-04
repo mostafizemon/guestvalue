@@ -2,12 +2,14 @@
 
 @theme {
   --font-sans: "Inter", sans-serif;
-  --color-background: #1C1917;
-  --color-foreground: #ffffff;
+  --color-background: #F8F9FA;
+  --color-foreground: #212529;
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans);
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }
